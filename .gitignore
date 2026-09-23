@@ -1,0 +1,15 @@
+node_modules/
+.next/
+out/
+src/generated/prisma/
+uploads/
+.env
+.env*
+*.log
+.DS_Store
+Thumbs.db
+.opencode/
+.agents/
+.claude/
+.cursor/
+.devin/

@@ -1,0 +1,166 @@
+generator client {
+  provider = "prisma-client-js"
+  output      = "../src/generated/prisma/client"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Series {
+  id          String       @id @default(cuid())
+  slug        String       @unique
+  titleHanzi  String
+  titleLatin  String
+  titlePinyin String?
+  synopsis    String?      @db.Text
+  posterPath  String?
+  status      SeriesStatus @default(ONGOING)
+  year        Int?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  episodes    Episode[]
+  cast        SeriesCast[]
+  posters     Poster[]
+
+  @@index([status])
+  @@map("series")
+}
+
+model Poster {
+  id        String   @id @default(cuid())
+  seriesId  String
+  path      String
+  isThumb   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  series Series @relation(fields: [seriesId], references: [id], onDelete: Cascade)
+
+  @@index([seriesId])
+  @@map("posters")
+}
+
+model Person {
+  id                  String               @id @default(cuid())
+  nameHanzi           String?
+  nameLatin           String
+  slug                String?              @unique
+  avatarPath          String?
+  bio                 String?
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  episodeContributors EpisodeContributor[]
+  spokenLines         Line[]               @relation("SpeakerLines")
+  seriesCast          SeriesCast[]
+
+  @@map("persons")
+}
+
+model SeriesCast {
+  id            String  @id @default(cuid())
+  seriesId      String
+  personId      String
+  role          String
+  characterName String?
+  sortOrder     Int     @default(0)
+  person        Person  @relation(fields: [personId], references: [id], onDelete: Cascade)
+  series        Series  @relation(fields: [seriesId], references: [id], onDelete: Cascade)
+
+  @@unique([seriesId, personId])
+  @@index([seriesId])
+  @@index([personId])
+  @@map("series_cast")
+}
+
+model Episode {
+  id            String               @id @default(cuid())
+  seriesId      String
+  number        Int
+  title         String?
+  slug          String?
+  durationMs    Int?
+  isPublished   Boolean              @default(false)
+  importBatchId String?
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+  contributors  EpisodeContributor[]
+  importBatch   ImportBatch?         @relation(fields: [importBatchId], references: [id])
+  series        Series               @relation(fields: [seriesId], references: [id], onDelete: Cascade)
+  lines         Line[]
+
+  @@unique([seriesId, number])
+  @@unique([seriesId, slug])
+  @@index([seriesId])
+  @@index([importBatchId], map: "episodes_importBatchId_fkey")
+  @@map("episodes")
+}
+
+model EpisodeContributor {
+  id        String          @id @default(cuid())
+  episodeId String
+  personId  String
+  role      ContributorRole
+  episode   Episode         @relation(fields: [episodeId], references: [id], onDelete: Cascade)
+  person    Person          @relation(fields: [personId], references: [id], onDelete: Cascade)
+
+  @@unique([episodeId, personId, role])
+  @@index([episodeId])
+  @@index([personId])
+  @@map("episode_contributors")
+}
+
+model Line {
+  id            String   @id @default(cuid())
+  episodeId     String
+  idx           Int
+  startMs       Int
+  endMs         Int?
+  hanzi         String
+  pinyin        String
+  pinyinTokens  String   @db.LongText
+  translationEn String
+  speakerId     String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  episode       Episode  @relation(fields: [episodeId], references: [id], onDelete: Cascade)
+  speaker       Person?  @relation("SpeakerLines", fields: [speakerId], references: [id])
+
+  @@unique([episodeId, idx])
+  @@index([episodeId])
+  @@index([speakerId])
+  @@map("lines")
+}
+
+model ImportBatch {
+  id        String    @id @default(cuid())
+  source    String
+  notes     String?
+  createdAt DateTime  @default(now())
+  episodes  Episode[]
+
+  @@map("import_batches")
+}
+
+enum SeriesStatus {
+  ONGOING
+  COMPLETED
+  HIATUS
+}
+
+enum ContributorRole {
+  TRANSLATOR
+  EDITOR
+  PROOFREADER
+}

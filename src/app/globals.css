@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+/* Tailwind CSS v4 directive; not a standard CSS at-rule. */
+/* stylelint-disable-next-line at-rule-no-unknown */
+@theme {
+  /* Palette – dark‑first */
+  --color-ink: #14181A;
+  --color-ink-raised: #1D2224;
+  --color-porcelain: #EDEAE2;
+  --color-brass: #B08D57;
+  --color-plum: #6B3A4A;
+  --color-paper: #F7F5EF;
+
+  /* Fonts – loaded via next/font/local elsewhere */
+  --font-hanzi: "Noto Serif SC", serif;
+  --font-latin: "Inter", sans-serif;
+  --font-pinyin: "Inter", sans-serif;
+
+  /* Radius & shadows */
+  --radius-sm: .25rem;
+  --radius-md: .375rem;
+  --radius-lg: .5rem;
+  --radius-xl: .75rem;
+  --radius-2xl: 1rem;
+  --radius-full: 9999px;
+
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / .05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / .1), 0 2px 4px -2px rgb(0 0 0 / .1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / .1), 0 4px 6px -4px rgb(0 0 0 / .1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / .1), 0 8px 10px -6px rgb(0 0 0 / .1);
+}
+
+@source "../**/*.tsx";
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-latin);
+  /* background-color: var(--color-ink); */
+  color: var(--color-porcelain);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Fallback for any element that doesn't already have a hanzi font */
+:where(:not(:has([class*="font-hanzi"]))) { font-family: var(--font-latin); }
+
+.font-hanzi { font-family: var(--font-hanzi); }
+.font-latin { font-family: var(--font-latin); }
+.font-pinyin { font-family: var(--font-pinyin); }
