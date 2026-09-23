@@ -4,6 +4,8 @@ import { getSeriesBySlug } from '@/data/series';
 import Link from 'next/link';
 import Image from 'next/image';
 
+export const dynamic = 'force-dynamic';
+
 export async function generateStaticParams() {
   const series = await getAllSeriesForStaticParams();
   return series.map((s) => ({ slug: s.slug }));
