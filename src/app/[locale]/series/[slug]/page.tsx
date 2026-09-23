@@ -6,19 +6,6 @@ import Image from 'next/image';
 
 export const dynamic = 'force-dynamic';
 
-export async function generateStaticParams() {
-  const series = await getAllSeriesForStaticParams();
-  return series.map((s) => ({ slug: s.slug }));
-}
-
-async function getAllSeriesForStaticParams() {
-  const { prisma } = await import('@/db/client');
-  return prisma.series.findMany({
-    select: { slug: true },
-    where: { status: { not: 'HIATUS' } },
-  });
-}
-
 export default async function SeriesDetailPage({
   params,
 }: {
