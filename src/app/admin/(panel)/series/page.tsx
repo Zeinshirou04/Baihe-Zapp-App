@@ -1,10 +1,10 @@
 import { prisma } from '@/db/client';
 import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth';
-import { StatCard } from '@/app/admin/_components/StatCard';
 import Link from 'next/link';
-import { BookOpen, Plus, Pencil, Trash2, Image } from 'lucide-react';
+import { BookOpen, Plus, Pencil, Trash2, Image as ImageIcon } from 'lucide-react';
 import { DeleteButton } from './DeleteButton';
+import Image from 'next/image';
 
 export const metadata = { title: 'Manage Series' };
 
@@ -58,14 +58,16 @@ export default async function SeriesListPage() {
               <Link href={`/admin/series/${s.slug}`} className="block">
                 <div className="aspect-[2/3] relative bg-ink-raised overflow-hidden">
                   {s.posterPath ? (
-                    <img
+                    <Image
                       src={`/media/${s.posterPath}`}
                       alt={s.titleHanzi}
-                      className="w-full h-full object-cover transition-transform duration-300 hover:scale-[1.03]"
+                      fill
+                      className="object-cover transition-transform duration-300 hover:scale-[1.03]"
+                      sizes="100vw"
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
-                      <Image className="h-12 w-12 text-ink/20" />
+                      <ImageIcon className="h-12 w-12 text-ink/20" />
                     </div>
                   )}
                   <span className="absolute top-2 left-2 text-[10px] font-body font-medium text-porcelain bg-ink/80 backdrop-blur-sm px-2 py-0.5 rounded capitalize">

@@ -1,6 +1,7 @@
 "use client";
 import { useState } from 'react';
-import { Plus, Trash2, Check, Loader2, Image as ImageIcon, CheckCircle } from 'lucide-react';
+import { Plus, Trash2, Check, Image as ImageIcon, CheckCircle } from 'lucide-react';
+import Image from 'next/image';
 
 interface Poster {
   id: string;
@@ -135,7 +136,7 @@ export function SeriesPostersTab({ seriesId, posters: initialPosters }: SeriesPo
       {posters.length === 0 ? (
         <div className="bg-white/60 border border-ink/10 rounded-md p-8 text-center">
           <ImageIcon className="h-12 w-12 mx-auto text-ink/20 mb-4" />
-          <p className="text-ink/50">No posters yet. Click "Upload Posters" to add images.</p>
+          <p className="text-ink/50">No posters yet. Click &ldquo;Upload Posters&rdquo; to add images.</p>
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -153,7 +154,7 @@ export function SeriesPostersTab({ seriesId, posters: initialPosters }: SeriesPo
                 className="absolute top-2 left-2 z-10 h-4 w-4 text-brass border-ink/30 rounded focus:ring-brass"
               />
               <div className="aspect-[2/3] relative overflow-hidden">
-                <img src={`/media/${poster.path}`} alt="" className="w-full h-full object-cover" />
+                <Image src={`/media/${poster.path}`} alt="" fill className="object-cover" sizes="100vw" />
                 {poster.isThumb && (
                   <div className="absolute top-2 right-2">
                     <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium text-white bg-brass rounded-full">

@@ -1,6 +1,7 @@
 "use client";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Plus, Trash2, UserPlus, X, MoreHorizontal } from 'lucide-react';
+import Image from 'next/image';
 
 interface Contributor {
   id: string;
@@ -137,7 +138,7 @@ export function SeriesContributorsTab({ seriesId }: SeriesContributorsTabProps) 
       ) : contributors.length === 0 ? (
         <div className="bg-white/60 border border-ink/10 rounded-md p-8 text-center">
           <MoreHorizontal className="h-12 w-12 mx-auto text-ink/20 mb-4" />
-          <p className="text-ink/50">No contributors yet. Click "Add Contributor" to get started.</p>
+          <p className="text-ink/50">No contributors yet. Click &ldquo;Add Contributor&rdquo; to get started.</p>
         </div>
       ) : (
         <div className="bg-white/60 border border-ink/10 rounded-md overflow-hidden">

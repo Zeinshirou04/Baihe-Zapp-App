@@ -116,7 +116,7 @@ export function SeriesEpisodesTab({ seriesId, episodes }: SeriesEpisodesTabProps
       {episodes.length === 0 ? (
         <div className="bg-white/60 border border-ink/10 rounded-md p-8 text-center">
           <Video className="h-12 w-12 mx-auto text-ink/20 mb-4" />
-          <p className="text-ink/50">No episodes yet. Click "Add Episode" to get started.</p>
+          <p className="text-ink/50">No episodes yet. Click &ldquo;Add Episode&rdquo; to get started.</p>
         </div>
       ) : (
         <div className="bg-white/60 border border-ink/10 rounded-md overflow-hidden">

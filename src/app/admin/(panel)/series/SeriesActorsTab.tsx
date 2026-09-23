@@ -1,7 +1,7 @@
 "use client";
 import { useState } from 'react';
 import { Plus, Trash2, GripVertical, UserPlus, X, Users } from 'lucide-react';
-import { prisma } from '@/db/client';
+import Image from 'next/image';
 
 interface CastMember {
   id: string;
@@ -118,7 +118,7 @@ export function SeriesActorsTab({ seriesId, cast: initialCast }: SeriesActorsTab
       {cast.length === 0 ? (
         <div className="bg-white/60 border border-ink/10 rounded-md p-8 text-center">
           <Users className="h-12 w-12 mx-auto text-ink/20 mb-4" />
-          <p className="text-ink/50">No cast members yet. Click "Add Actor" to get started.</p>
+          <p className="text-ink/50">No cast members yet. Click &ldquo;Add Actor&rdquo; to get started.</p>
         </div>
       ) : (
         <div className="bg-white/60 border border-ink/10 rounded-md overflow-hidden">
@@ -133,7 +133,7 @@ export function SeriesActorsTab({ seriesId, cast: initialCast }: SeriesActorsTab
               </tr>
             </thead>
             <tbody className="divide-y divide-ink/10">
-              {cast.map((member, index) => (
+              {cast.map((member) => (
                 <tr key={member.id} className="hover:bg-ink/5">
                   <td className="px-4 py-3 text-ink/40">
                     <GripVertical className="h-5 w-5 cursor-grab" />
@@ -141,7 +141,7 @@ export function SeriesActorsTab({ seriesId, cast: initialCast }: SeriesActorsTab
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
                       {member.person.avatarPath ? (
-                        <img src={`/media/${member.person.avatarPath}`} alt="" className="h-8 w-8 rounded-full object-cover" />
+                        <Image src={`/media/${member.person.avatarPath}`} alt="" fill className="h-8 w-8 rounded-full object-cover" sizes="32px" />
                       ) : (
                         <div className="h-8 w-8 rounded-full bg-ink-raised flex items-center justify-center">
                           <UserPlus className="h-4 w-4 text-ink/30" />

@@ -1,6 +1,6 @@
 "use server";
 import { z } from 'zod';
-import { hashPassword, verifyPassword, signSession } from '@/lib/auth';
+import { verifyPassword, signSession } from '@/lib/auth';
 import { prisma } from '@/db/client';
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
