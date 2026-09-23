@@ -23,6 +23,8 @@ jobs:
 
       - name: Generate Prisma Client
         run: npx prisma generate
+        env:
+          DATABASE_URL: mariadb://root:password@localhost:3306/baihe_ci
 
       - name: Lint
         run: npm run lint
