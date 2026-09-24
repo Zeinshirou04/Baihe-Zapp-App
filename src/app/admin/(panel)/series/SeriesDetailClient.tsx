@@ -1,7 +1,8 @@
 "use client";
 import { useState } from 'react';
 import Link from 'next/link';
-import { Pencil, Trash2, Image, Users, Video, Upload, Check, MoreHorizontal, X } from 'lucide-react';
+import { Pencil, Users, Video, MoreHorizontal, Image as ImageIcon } from 'lucide-react';
+import Image from 'next/image';
 import { SeriesActorsTab } from './SeriesActorsTab';
 import { SeriesEpisodesTab } from './SeriesEpisodesTab';
 import { SeriesPostersTab } from './SeriesPostersTab';
@@ -59,7 +60,7 @@ export function SeriesDetailClient({ series }: SeriesDetailClientProps) {
   const tabs = [
     { id: 'actors', label: 'Actors', icon: Users },
     { id: 'episodes', label: 'Episodes', icon: Video },
-    { id: 'posters', label: 'Posters', icon: Image },
+    { id: 'posters', label: 'Posters', icon: ImageIcon },
     { id: 'contributors', label: 'Contributors', icon: MoreHorizontal },
   ] as const;
 
@@ -73,7 +74,7 @@ export function SeriesDetailClient({ series }: SeriesDetailClientProps) {
           {displayPoster && (
             <Link href={`/admin/series/${series.slug}/posters`} className="flex-shrink-0">
               <div className="w-24 h-36 aspect-[2/3] bg-ink-raised rounded overflow-hidden">
-                <img src={`/media/${displayPoster.path}`} alt={series.titleHanzi} className="w-full h-full object-cover" />
+                <Image src={`/media/${displayPoster.path}`} alt={series.titleHanzi} fill className="object-cover" />
               </div>
             </Link>
           )}
@@ -135,7 +136,7 @@ export function SeriesDetailClient({ series }: SeriesDetailClientProps) {
         <div className="mt-6">
           {activeTab === 'actors' && <SeriesActorsTab seriesId={series.id} cast={series.cast} />}
           {activeTab === 'episodes' && <SeriesEpisodesTab seriesId={series.id} episodes={series.episodes} />}
-          {activeTab === 'posters' && <SeriesPostersTab seriesId={series.id} posters={series.posters} />}
+          {activeTab === 'posters' && <SeriesPostersTab seriesSlug={series.slug} posters={series.posters} />}
           {activeTab === 'contributors' && <SeriesContributorsTab seriesId={series.id} />}
         </div>
       </div>

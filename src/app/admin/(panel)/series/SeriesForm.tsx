@@ -6,7 +6,8 @@ import { createSeries, updateSeries } from '@/actions/series';
 import { generateSlug } from '@/lib/slug';
 import { FormField, Input } from '@/app/admin/_components/FormField';
 import { Button } from '@/app/admin/_components/Button';
-import { Plus, Loader2, Image } from 'lucide-react';
+import { Plus, Loader2 } from 'lucide-react';
+import Image from 'next/image';
 
 interface SeriesFormProps {
   initialData: {
@@ -181,7 +182,7 @@ export function SeriesForm({ initialData, actionUrl }: SeriesFormProps) {
         </div>
         {(previewUrl || formData.posterPath) && (
           <div className="mt-2 aspect-[2/3] w-32 bg-ink-raised rounded overflow-hidden">
-            <img src={previewUrl || `/media/${formData.posterPath}`} alt="Preview" className="w-full h-full object-cover" />
+            <Image src={previewUrl || `/media/${formData.posterPath}`} alt="Preview" fill className="object-cover" />
           </div>
         )}
       </FormField>

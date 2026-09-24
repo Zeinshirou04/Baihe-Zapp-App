@@ -1,7 +1,7 @@
 "use client";
 import { useState } from 'react';
 import Link from 'next/link';
-import { Plus, Trash2, Eye, Edit, Loader2, Video } from 'lucide-react';
+import { Plus, Trash2, Eye, Edit, Video } from 'lucide-react';
 
 interface Episode {
   id: string;
@@ -33,7 +33,6 @@ export function SeriesEpisodesTab({ seriesId, episodes }: SeriesEpisodesTabProps
         }),
       });
       if (res.ok) {
-        const data = await res.json();
         window.location.reload();
       }
     } catch (err) {

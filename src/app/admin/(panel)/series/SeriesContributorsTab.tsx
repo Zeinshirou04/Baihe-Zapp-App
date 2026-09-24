@@ -29,19 +29,25 @@ export function SeriesContributorsTab({ seriesId }: SeriesContributorsTabProps) 
   const [isAdding, setIsAdding] = useState(false);
   const [newContributor, setNewContributor] = useState({ personId: '', role: 'TRANSLATOR', episodeId: '' });
 
-  const fetchContributors = async () => {
-    try {
-      const res = await fetch(`/api/admin/series/${seriesId}/contributors`);
-      if (res.ok) {
-        const data = await res.json();
-        setContributors(data);
+  // Load contributors on mount
+  useEffect(() => {
+    let mounted = true;
+    const loadContributors = async () => {
+      try {
+        const res = await fetch(`/api/admin/series/${seriesId}/contributors`);
+        if (res.ok) {
+          const data = await res.json();
+          if (mounted) setContributors(data);
+        }
+      } catch (err) {
+        console.error('Failed to fetch contributors:', err);
+      } finally {
+        if (mounted) setIsLoading(false);
       }
-    } catch (err) {
-      console.error('Failed to fetch contributors:', err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    };
+    loadContributors();
+    return () => { mounted = false; };
+  }, [seriesId]);
 
   const handleAddContributor = async () => {
     if (!newContributor.personId || !newContributor.episodeId) return;
@@ -157,7 +163,7 @@ export function SeriesContributorsTab({ seriesId }: SeriesContributorsTabProps) 
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
                       {contributor.person.avatarPath ? (
-                        <img src={`/media/${contributor.person.avatarPath}`} alt="" className="h-8 w-8 rounded-full object-cover" />
+                        <Image src={`/media/${contributor.person.avatarPath}`} alt="" width={32} height={32} className="h-8 w-8 rounded-full object-cover" />
                       ) : (
                         <div className="h-8 w-8 rounded-full bg-ink-raised flex items-center justify-center">
                           <UserPlus className="h-4 w-4 text-ink/30" />

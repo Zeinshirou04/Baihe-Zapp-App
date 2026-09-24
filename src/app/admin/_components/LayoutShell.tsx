@@ -38,7 +38,6 @@ export function LayoutShell({ children, user, initialFlash }: LayoutShellProps) 
     localStorage.setItem('sidebar-collapsed', String(collapsed));
   }, [collapsed]);
 
-  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
   const closeSidebar = () => setSidebarOpen(false);
   const toggleTheme = () => setIsDark(!isDark);
   const toggleCollapse = () => setCollapsed(!collapsed);

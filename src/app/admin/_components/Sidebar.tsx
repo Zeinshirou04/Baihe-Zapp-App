@@ -1,7 +1,7 @@
 "use client";
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, BookOpen, List, Settings, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Home, BookOpen, Settings, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const menuItems = [
   { href: '/admin', label: 'Dashboard', icon: Home },

@@ -11,11 +11,11 @@ interface Poster {
 }
 
 interface SeriesPostersTabProps {
-  seriesId: string;
+  seriesSlug: string;
   posters: Poster[];
 }
 
-export function SeriesPostersTab({ seriesId, posters: initialPosters }: SeriesPostersTabProps) {
+export function SeriesPostersTab({ seriesSlug, posters: initialPosters }: SeriesPostersTabProps) {
   const [posters, setPosters] = useState<Poster[]>(initialPosters);
   const [isUploading, setIsUploading] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -29,7 +29,7 @@ export function SeriesPostersTab({ seriesId, posters: initialPosters }: SeriesPo
       for (const file of Array.from(files)) {
         const formData = new FormData();
         formData.append('file', file);
-        const res = await fetch(`/api/admin/series/${seriesId}/posters`, {
+        const res = await fetch(`/api/admin/series/${seriesSlug}/posters`, {
           method: 'POST',
           body: formData,
         });
@@ -37,8 +37,7 @@ export function SeriesPostersTab({ seriesId, posters: initialPosters }: SeriesPo
           const data = await res.json();
           setPosters([data, ...posters]);
         }
-      }
-      e.currentTarget.value = '';
+}
     } catch (err) {
       console.error('Upload failed:', err);
     } finally {
@@ -51,7 +50,7 @@ export function SeriesPostersTab({ seriesId, posters: initialPosters }: SeriesPo
       const res = await fetch(`/api/admin/posters/${posterId}/thumbnail`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ seriesId }),
+        body: JSON.stringify({ seriesSlug }),
       });
       if (res.ok) {
         setPosters(posters.map(p => ({ ...p, isThumb: p.id === posterId })));
@@ -77,7 +76,7 @@ export function SeriesPostersTab({ seriesId, posters: initialPosters }: SeriesPo
     if (selectedIds.length === 0) return;
     if (!confirm(`Delete ${selectedIds.length} selected posters?`)) return;
     try {
-      const res = await fetch(`/api/admin/series/${seriesId}/posters/bulk`, {
+      const res = await fetch(`/api/admin/series/${seriesSlug}/posters/bulk`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ids: selectedIds }),
@@ -93,14 +92,6 @@ export function SeriesPostersTab({ seriesId, posters: initialPosters }: SeriesPo
 
   const toggleSelect = (id: string) => {
     setSelectedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
-  };
-
-  const toggleSelectAll = () => {
-    if (selectedIds.length === posters.length) {
-      setSelectedIds([]);
-    } else {
-      setSelectedIds(posters.map(p => p.id));
-    }
   };
 
   return (

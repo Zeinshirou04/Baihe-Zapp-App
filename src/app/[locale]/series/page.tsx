@@ -7,7 +7,7 @@ export default async function SeriesPage({
 }: {
   params: Promise<{ locale: string }>;
 }) {
-  const { locale: _locale } = await params;
+  await params;
   const series = await getAllSeries();
 
   return (

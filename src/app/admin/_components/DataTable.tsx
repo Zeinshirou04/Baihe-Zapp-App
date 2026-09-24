@@ -1,5 +1,5 @@
 "use client";
-import { TableHTMLAttributes, forwardRef } from 'react';
+import { TableHTMLAttributes } from 'react';
 
 interface Column<T> {
   key: string;
@@ -23,7 +23,6 @@ export function DataTable<T>({
   emptyMessage = 'No data',
   rowClassName,
   className = '',
-  children,
   ...props
 }: DataTableProps<T>) {
   return (

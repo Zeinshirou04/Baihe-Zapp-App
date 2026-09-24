@@ -8,7 +8,7 @@ interface Props {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug, id } = await params;
+  const { id } = await params;
   const episode = await getEpisodeById(id);
   if (!episode) return { title: 'Not Found' };
   return {
@@ -18,9 +18,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function EpisodePage({ params }: Props) {
-  const { locale, slug: _slug, id } = await params;
+  const { locale, slug, id } = await params;
   const episode = await getEpisodeById(id);
-  if (!episode || episode.series.slug !== _slug) notFound();
+  if (!episode || episode.series.slug !== slug) notFound();
 
-  return <EpisodeReader locale={locale} episode={episode} seriesSlug={_slug} />;
+  return <EpisodeReader locale={locale} episode={episode} seriesSlug={slug} />;
 }
