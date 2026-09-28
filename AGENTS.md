@@ -115,6 +115,7 @@ For /admin, also follow the "Admin UI" section of that skill.
   files: state a plan and wait for approval before editing.
 - Be terse. Zayn is a full-stack developer (Laravel, React, REST APIs); skip
   basics. Reply in the language he writes in.
+- **MUST apply changes directly to files using Edit/Write tools.** Never output code in chat — edit the actual file.
 
 ## Prisma 7 (pinned)
 - Project uses Prisma ORM 7 with MariaDB. Prisma 8 does NOT support MySQL/MariaDB yet.

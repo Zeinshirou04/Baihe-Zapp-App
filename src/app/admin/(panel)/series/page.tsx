@@ -2,7 +2,7 @@ import { prisma } from '@/db/client';
 import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth';
 import Link from 'next/link';
-import { BookOpen, Plus, Pencil, Trash2, Image as ImageIcon } from 'lucide-react';
+import { BookOpen, Plus, Pencil, Image as ImageIcon } from 'lucide-react';
 import { DeleteButton } from './DeleteButton';
 import Image from 'next/image';
 
@@ -16,6 +16,7 @@ export default async function SeriesListPage() {
     orderBy: { createdAt: 'desc' },
     include: {
       _count: { select: { episodes: true } },
+      posters: { where: { isThumb: true }, take: 1 },
     },
   });
 
@@ -57,9 +58,9 @@ export default async function SeriesListPage() {
             >
               <Link href={`/admin/series/${s.slug}`} className="block">
                 <div className="aspect-[2/3] relative bg-ink-raised overflow-hidden">
-                  {s.posterPath ? (
+                  {s.posters[0]?.path ? (
                     <Image
-                      src={`/media/${s.posterPath}`}
+                      src={`/media/${s.posters[0].path}`}
                       alt={s.titleHanzi}
                       fill
                       className="object-cover transition-transform duration-300 hover:scale-[1.03]"
@@ -84,7 +85,7 @@ export default async function SeriesListPage() {
               </Link>
               <div className="border-t border-ink/10 p-3 flex items-center gap-6">
                 <Link
-                  href={`/admin/series/${s.id}/edit`}
+                  href={`/admin/series/${s.slug}/edit`}
                   className="text-center text-sm font-medium text-brass hover:text-brass/80"
                 >
                   <Pencil className="h-4 w-4 mx-auto mb-1" />

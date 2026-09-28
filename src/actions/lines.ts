@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { requireAdmin } from '@/lib/auth';
 import { prisma } from '@/db/client';
 import { revalidatePath } from 'next/cache';
-import pinyinPro from 'pinyin-pro';
+import { pinyin } from 'pinyin-pro';
 
 const lineSchema = z.object({
   startMs: z.number().int().nonnegative(),
@@ -21,7 +21,7 @@ function generatePinyin(hanzi: string): { pinyin: string; pinyinTokens: string }
   
   for (const char of hanzi) {
     if (/[\u4e00-\u9fff]/.test(char)) {
-      const py = pinyinPro.pinyin(char, { toneType: 'symbol', separator: '' });
+      const py = pinyin(char, { toneType: 'symbol', separator: '' });
       tokens.push({ h: char, p: py });
       plain += py + ' ';
     } else {

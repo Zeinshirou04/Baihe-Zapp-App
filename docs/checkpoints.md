@@ -1,83 +1,92 @@
-# Session Checkpoint — 2026-09-22
+# Session Checkpoint — 2026-09-24
 
 ## Summary of Work Completed
 
-### 1. Fixed Series Edit Page 404
-- **Problem:** `/admin/series/cmucn708c0000a4cqlcuz63y9/edit` returned 404
-- **Root cause:** Route used `[id]` (cuid) but no `[id]/edit/page.tsx` existed
-- **Fix:** Created `/admin/series/[slug]/edit/page.tsx` using slug-based routing
-- **Files:** `src/app/admin/(panel)/series/[slug]/edit/page.tsx`
+### 1. Episode Editor & Admin API Routes (This Session)
 
-### 2. Fixed Slug Auto-Generation Bug
-- **Problem:** Slug only showed first letter of Latin title
-- **Root cause:** `SeriesForm.tsx` had `&& !formData.slug` guard preventing updates
-- **Fix:** Removed guard — slug now updates whenever Latin title changes
-- **Files:** `src/app/admin/(panel)/series/SeriesForm.tsx:50`
+**Episode CRUD API:**
+- `POST /api/admin/series/[slug]/episodes` — create episode
+- `GET /api/admin/series/[slug]/episodes` — list episodes for series
+- `PATCH /api/admin/episodes/[id]` — update episode (title, number, slug, duration, published)
+- `DELETE /api/admin/episodes/[id]` — delete episode
 
-### 3. Created Series Detail Page with Tabbed Interface
-- **Route:** `/admin/series/[slug]` (replaces direct edit link from series grid)
-- **Tabs (default: Actors):**
-  - **Actors** — Cast management (add/remove/reorder via `series_cast`)
-  - **Episodes** — Episode table with publish toggle, links to episode editor
-  - **Posters** — Gallery with upload, thumbnail selection, bulk delete
-  - **Contributors** — Per-episode translator/editor/proofreader credits
-- **Files:**
-  - `src/app/admin/(panel)/series/[slug]/page.tsx` (Server Component)
-  - `src/app/admin/(panel)/series/SeriesDetailClient.tsx`
-  - `src/app/admin/(panel)/series/SeriesActorsTab.tsx`
-  - `src/app/admin/(panel)/series/SeriesEpisodesTab.tsx`
-  - `src/app/admin/(panel)/series/SeriesPostersTab.tsx`
-  - `src/app/admin/(panel)/series/SeriesContributorsTab.tsx`
+**Cast Management API:**
+- `POST /api/admin/series/[slug]/cast` — add cast member
+- `GET /api/admin/series/[slug]/cast` — list cast for series
+- `DELETE /api/admin/series/[slug]/cast/[personId]` — remove cast member
 
-### 4. Poster Gallery Schema & Actions
-- **Schema change:** Added `Poster` model (path, isThumb, seriesId FK)
-- **Migration:** `20260922145217_add_poster_gallery`
-- **Actions:** `src/actions/poster.ts` — upload, setThumbnail, deletePoster, bulkDeletePosters
-- **Data:** `src/data/poster.ts` — getSeriesPosters, getSeriesThumbnail
-- **Upload:** `src/app/api/upload/route.ts` + `src/lib/upload.ts` (uuid-based filenames)
+**Contributor Management API:**
+- `POST /api/admin/series/[slug]/contributors` — add contributor to episode (TRANSLATOR/EDITOR/PROOFREADER)
+- `GET /api/admin/series/[slug]/contributors` — list all contributors across series episodes
+- `DELETE /api/admin/series/[slug]/contributors/[contributorId]` — remove contributor
 
-### 5. Navigation Cleanup
-- **Sidebar:** Removed global "Episodes" link (now scoped to series detail tab)
-- **Series list:** Cards link to detail page (`/admin/series/${slug}`); "Edit" button in detail header
-- **Files:** `src/app/admin/(panel)/series/page.tsx`, `src/app/admin/_components/Sidebar.tsx`
+**Episode Editor UI (`/admin/series/[slug]/episodes/[id]`):**
+- Added **Contributors tab** alongside Lines tab
+- Add/remove contributors per episode with role selector
+- Fixed JSX fragment parsing error
+- Fixed TypeScript union type for contributor role state
+- Line editor: timestamps, hanzi, translation, pinyin display, save via `replaceEpisodeLines` action
 
-### 6. Verification
-- `npm run build` ✓ (8 routes generated)
-- `npx tsc --noEmit` ✓ (no type errors)
-- `npm run lint` ✓ (only pre-existing Prisma-generated warnings)
+### 2. Lint & Build
+- `npm run lint` passes clean (0 warnings/errors)
+- `npm run build` compiles successfully
+
+---
+
+## Previous Session Summary (2026-09-23)
+
+### 1. GitHub Repository Setup & CI/CD
+- **Initialized git repo** with proper `.gitignore` (excludes `.env*`, `.next/`, `node_modules/`, `src/generated/prisma/`, `uploads/`, IDE configs)
+- **Created GitHub repo** `Baihe-Zapp-App` (private), pushed `dev` branch
+- **CI Workflow** (`.github/workflows/ci.yml`): runs on push/PR to `dev` and `main`
+  - Node 22 via `.nvmrc`
+  - `npm ci` → `prisma generate` (with dummy `DATABASE_URL`) → `lint` → `test` → `build`
+
+### 2. Vitest Config & Test Suite
+- **Fixed vitest.config.ts** — replaced ESM-only `vite-tsconfig-paths` with manual path aliases (`@/lib`, `@/actions`, `@/data`, etc.)
+- **Created comprehensive test suite** (21 tests across 4 files):
+  - `src/__tests__/slug.test.ts` (10) — slugify/generateSlug edge cases including unicode
+  - `src/__tests__/flash.test.ts` (4) — set/get/delete flash cookies, malformed JSON handling
+  - `src/__tests__/auth.test.ts` (6) — bcrypt hash/verify, JWT sign/verify, session extraction, admin guard
+  - `src/__tests__/upload.test.ts` (3) — path generation, default dir fallback, delete + missing file tolerance
+- **All tests passing** locally and in CI
+
+### 3. Slug Function Unicode Support
+- **Fixed `src/lib/slug.ts`** — updated regex to preserve CJK characters using Unicode property escapes (`\p{L}\p{N}` with `u` flag)
+- **Critical for Chinese drama site** — slugs now support hanzi in titles
+- Tests updated and passing
+
+### 4. CI Build Fix — Series Detail Page
+- **Problem:** Build failed on CI with "error parsing connection string" — Prisma tried to connect during static generation
+- **Root cause:** `generateStaticParams` in `/[locale]/series/[slug]/page.tsx` queried DB at build time
+- **Fix:** Added `export const dynamic = 'force-dynamic'` and removed `generateStaticParams` entirely
+- **Result:** Build passes — page renders on-demand at request time with real DB credentials
+
+### 5. Agent Configuration Updates (Prevent Code-in-Chat)
+- **AGENTS.md** — Added to "Working style": `MUST apply changes directly to files using Edit/Write tools. Never output code in chat — edit the actual file.`
+- **github-workflow skill** — Added to Step 3: `Code changes must be applied directly to files using Edit/Write tools. Never output code in chat responses — edit the actual file.`
 
 ---
 
 ## TODOs for Next Session
 
 ### High Priority
-1. **Episode Editor** — `/admin/series/[slug]/episodes/[id]`
-   - Line editor: bulk-paste transcript, edit timestamps/hanzi/translation
-   - Pinyin auto-generation on save
-   - Contributors sub-tab (manage `EPISODE_CONTRIBUTOR` for this episode)
-
-2. **API Routes for Tab Data Mutations**
-   - `POST/DELETE /api/admin/series/[slug]/cast` — actor management
-   - `POST/PATCH/DELETE /api/admin/series/[slug]/episodes` — episode CRUD
-   - `POST/DELETE /api/admin/series/[slug]/contributors` — contributor management
-   - `POST/DELETE /api/admin/series/[slug]/posters` — poster upload/delete
-   - `POST /api/admin/posters/[id]/thumbnail` — set thumbnail
-   - `DELETE /api/admin/series/[slug]/posters/bulk` — bulk delete
-
-3. **Public Episode Reader Integration**
-   - Ensure `/[locale]/series/[slug]/episode/[id]` reads same data
+1. **Public Episode Reader Integration Verification**
+   - Test `/[locale]/series/[slug]/episode/[id]` end-to-end with real data
    - Verify bilingual hanzi/pinyin/English rendering works with new schema
+   - Confirm pinyin toggle, ruby annotations, timestamps display correctly
+
+3. **Poster Backfill** — Create `Poster` rows for existing series using legacy `posterPath`
 
 ### Medium Priority
-4. **Backfill Posters** — Create `Poster` rows for existing series using legacy `posterPath`
-5. **Episode List in Detail** — Add duration formatting, slug display, better empty states
-6. **Cast Reordering** — Drag-and-drop for `sortOrder` in Actors tab
+4. **Episode List in Detail** — Add duration formatting, slug display, better empty states
+5. **Cast Reordering** — Drag-and-drop for `sortOrder` in Actors tab
+6. **Episode Search/Filter** — Series list search by title/hanzi/slug
 
 ### Low Priority / Nice-to-Have
 7. **Image Optimization** — Next.js Image component for posters/thumbnails
-8. **Search/Filter** — Series list search by title/hanzi/slug
-9. **Import Script** — Bulk import from Fanjiao CSV (if API available)
-10. **Contributor Aggregation** — Series-level contributor summary in Contributors tab
+8. **Import Script** — Bulk import from Fanjiao CSV (if API available)
+9. **Contributor Aggregation** — Series-level contributor summary in Contributors tab
 
 ---
 
@@ -90,34 +99,44 @@
 | Tabs in detail page (not separate routes) | Keeps context, avoids deep nesting, single data fetch |
 | Remove global Episodes from sidebar | Episode management is series-scoped; avoids orphaned episodes |
 | Keep legacy `posterPath` on Series | Fallback for existing data; can drop after backfill |
+| Manual path aliases in vitest.config.ts | Avoids ESM-only `vite-tsconfig-paths` plugin, works in CI |
+| Unicode-aware slugify | Required for Chinese drama titles with hanzi |
+| `force-dynamic` on series detail | Avoids build-time DB access; renders on-demand in prod |
+| Contributor tab in Episode Editor | Episode-scoped credits; matches `EPISODE_CONTRIBUTOR` schema |
 
 ---
 
 ## Files Modified/Created This Session
 
-### New Files
+### New API Routes
 ```
-prisma/migrations/20260922145217_add_poster_gallery/
-src/data/poster.ts
-src/actions/poster.ts
-src/lib/upload.ts
-src/app/api/upload/route.ts
-src/app/admin/(panel)/series/[slug]/edit/page.tsx
-src/app/admin/(panel)/series/[slug]/page.tsx
-src/app/admin/(panel)/series/SeriesDetailClient.tsx
-src/app/admin/(panel)/series/SeriesActorsTab.tsx
-src/app/admin/(panel)/series/SeriesEpisodesTab.tsx
-src/app/admin/(panel)/series/SeriesPostersTab.tsx
-src/app/admin/(panel)/series/SeriesContributorsTab.tsx
+src/app/api/admin/series/[slug]/episodes/route.ts
+src/app/api/admin/episodes/[id]/route.ts
+src/app/api/admin/series/[slug]/cast/route.ts
+src/app/api/admin/series/[slug]/cast/[personId]/route.ts
+src/app/api/admin/series/[slug]/contributors/route.ts
+src/app/api/admin/series/[slug]/contributors/[contributorId]/route.ts
 ```
 
 ### Modified Files
 ```
-prisma/schema.prisma          (+ Poster model, Series.posters relation)
-src/app/admin/(panel)/series/SeriesForm.tsx        (slug auto-gen fix)
-src/app/admin/(panel)/series/page.tsx              (links → detail page)
-src/app/admin/_components/Sidebar.tsx              (removed Episodes link)
-src/app/admin/(panel)/series/[slug]/edit/page.tsx  (import path fix)
+src/app/admin/(panel)/series/[slug]/episodes/[id]/EpisodeEditorClient.tsx
+src/app/admin/(panel)/series/[slug]/episodes/[id]/page.tsx
+```
+
+### Previous Session Files (Lint Fixes)
+```
+src/app/admin/(panel)/series/SeriesContributorsTab.tsx
+src/app/admin/(panel)/series/SeriesDetailClient.tsx
+src/app/admin/(panel)/series/SeriesEpisodesTab.tsx
+src/app/admin/(panel)/series/SeriesForm.tsx
+src/app/admin/(panel)/series/SeriesPostersTab.tsx
+src/app/admin/_components/DataTable.tsx
+src/app/admin/_components/LayoutShell.tsx
+src/app/admin/_components/Sidebar.tsx
+src/app/[locale]/series/page.tsx
+src/app/[locale]/series/[slug]/episode/[id]/page.tsx
+src/lib/auth.ts
 ```
 
 ---
@@ -127,7 +146,8 @@ src/app/admin/(panel)/series/[slug]/edit/page.tsx  (import path fix)
 ```bash
 cd D:\Projects\baihe-dev
 npm run dev          # Start dev server
-# Test: /admin/series → click series → detail page with tabs
-# Test: /admin/series/new → create → edit → detail
-# Test: Poster upload + thumbnail set + bulk delete
+npm test             # Verify 21 tests pass
+npm run lint         # Verify lint clean
+npm run build        # Verify CI build passes
+# Ready to build: Bulk-paste transcript / Episode Reader verification
 ```

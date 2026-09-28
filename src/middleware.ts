@@ -1,17 +1,16 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-  if (pathname.startsWith('/admin') && !pathname.startsWith('/admin/login')) {
-    const token = request.cookies.get('baihe_session')?.value;
-    if (!token) {
-      return NextResponse.redirect(new URL('/admin/login', request.url));
-    }
-  }
+export function middleware(request: NextRequest) {
+  const url = new URL(request.url);
+  console.log(`${new Date().toISOString()} | ${request.method} | ${url.pathname}${url.search}`);
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/admin/:path*'],
+  matcher: [
+    '/api/:path*',
+    '/admin/:path*',
+    '/((?!_next|media|favicon.ico|robots.txt|sitemap.xml).*)',
+  ],
 };

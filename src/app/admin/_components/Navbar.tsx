@@ -27,10 +27,12 @@ export function Navbar({ user, isDark = false, onThemeToggle }: NavbarProps) {
     await logout();
   };
 
-  const currentSection = sections.find(s => pathname.startsWith(s.href)) || sections[0];
+  const currentSection = sections
+    .filter(s => pathname.startsWith(s.href))
+    .sort((a, b) => b.href.length - a.href.length)[0] || sections[0];
 
   return (
-    <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-sm border-b border-ink/10">
+    <header className="sticky top-0 z-[60] bg-white/80 backdrop-blur-sm border-b border-ink/10">
       <div className="px-4 h-16 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link href="/admin" className="font-serif-sc text-xl text-ink">
@@ -49,20 +51,25 @@ export function Navbar({ user, isDark = false, onThemeToggle }: NavbarProps) {
               <>
                 <div className="fixed inset-0 z-10" onClick={() => setShowSectionDropdown(false)} />
                 <div className="absolute left-0 mt-2 w-40 bg-white border border-ink/10 rounded-md shadow-lg py-1 z-20">
-                  {sections.map(s => (
-                    <Link
-                      key={s.key}
-                      href={s.href}
-                      onClick={() => setShowSectionDropdown(false)}
-                      className={`block px-3 py-2 text-sm transition-colors ${
-                        pathname.startsWith(s.href)
-                          ? 'bg-brass/10 text-brass'
-                          : 'text-ink/60 hover:bg-ink/5 hover:text-brass'
-                      }`}
-                    >
-                      {s.label}
-                    </Link>
-                  ))}
+                  {sections.map(s => {
+                    const isActive = sections
+                      .filter(sec => pathname.startsWith(sec.href))
+                      .sort((a, b) => b.href.length - a.href.length)[0]?.key === s.key;
+                    return (
+                      <Link
+                        key={s.key}
+                        href={s.href}
+                        onClick={() => setShowSectionDropdown(false)}
+                        className={`block px-3 py-2 text-sm transition-colors ${
+                          isActive
+                            ? 'bg-brass/10 text-brass'
+                            : 'text-ink/60 hover:bg-ink/5 hover:text-brass'
+                        }`}
+                      >
+                        {s.label}
+                      </Link>
+                    );
+                  })}
                 </div>
               </>
             )}
